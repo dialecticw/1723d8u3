@@ -27,26 +27,34 @@
             text-align: center;
             margin-bottom: 20px;
         }
-        .song {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #3e3e3e;
-            border-radius: 8px;
+        .dropdown {
+            margin-bottom: 20px;
+        }
+        select {
+            width: 100%;
             padding: 10px;
-            margin-bottom: 10px;
-            transition: background-color 0.3s;
-        }
-        .song:hover {
-            background-color: #4e4e4e;
-        }
-        .song-title {
-            font-size: 16px;
-            margin: 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #3e3e3e;
+            color: white;
         }
         audio {
-            width: 100px;
+            width: 100%;
             outline: none;
+            margin-bottom: 10px;
+        }
+        .play-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        .play-button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
@@ -54,77 +62,71 @@
 
 <div class="player">
     <h2>Music Player</h2>
-    <div class="song" id="song1">
-        <p class="song-title">Song 1 - Your Artist</p>
-        <audio controls>
-            <source src="https://your-github-repo-link/song1.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
+    <div class="dropdown">
+        <select id="trackSelect">
+            <option value="0">Select a Track</option>
+            <option value="1">Song 1 - Your Artist</option>
+            <option value="2">Song 2 - Your Artist</option>
+            <option value="3">Song 3 - Your Artist</option>
+            <option value="4">Song 4 - Your Artist</option>
+            <option value="5">Song 5 - Your Artist</option>
+            <option value="6">Song 6 - Your Artist</option>
+            <option value="7">Song 7 - Your Artist</option>
+            <option value="8">Song 8 - Your Artist</option>
+            <option value="9">Song 9 - Your Artist</option>
+            <option value="10">Song 10 - Your Artist</option>
+        </select>
     </div>
-    <div class="song" id="song2">
-        <p class="song-title">Song 2 - Your Artist</p>
-        <audio controls>
-            <source src="https://your-github-repo-link/song2.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
-    </div>
-    <div class="song" id="song3">
-        <p class="song-title">Song 3 - Your Artist</p>
-        <audio controls>
-            <source src="https://your-github-repo-link/song3.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
-    </div>
-    <div class="song" id="song4">
-        <p class="song-title">Song 4 - Your Artist</p>
-        <audio controls>
-            <source src="https://your-github-repo-link/song4.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
-    </div>
-    <div class="song" id="song5">
-        <p class="song-title">Song 5 - Your Artist</p>
-        <audio controls>
-            <source src="https://your-github-repo-link/song5.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
-    </div>
-    <div class="song" id="song6">
-        <p class="song-title">Song 6 - Your Artist</p>
-        <audio controls>
-            <source src="https://your-github-repo-link/song6.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
-    </div>
-    <div class="song" id="song7">
-        <p class="song-title">Song 7 - Your Artist</p>
-        <audio controls>
-            <source src="https://your-github-repo-link/song7.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
-    </div>
-    <div class="song" id="song8">
-        <p class="song-title">Song 8 - Your Artist</p>
-        <audio controls>
-            <source src="https://your-github-repo-link/song8.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
-    </div>
-    <div class="song" id="song9">
-        <p class="song-title">Song 9 - Your Artist</p>
-        <audio controls>
-            <source src="https://your-github-repo-link/song9.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
-    </div>
-    <div class="song" id="song10">
-        <p class="song-title">Song 10 - Your Artist</p>
-        <audio controls>
-            <source src="https://your-github-repo-link/song10.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
-    </div>
+    <audio id="audioPlayer" controls>
+        <source id="audioSource" src="" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <button class="play-button" id="nextButton">Next Song</button>
 </div>
+
+<script>
+    const trackList = [
+        "https://your-github-repo-link/song1.mp3",
+        "https://your-github-repo-link/song2.mp3",
+        "https://your-github-repo-link/song3.mp3",
+        "https://your-github-repo-link/song4.mp3",
+        "https://your-github-repo-link/song5.mp3",
+        "https://your-github-repo-link/song6.mp3",
+        "https://your-github-repo-link/song7.mp3",
+        "https://your-github-repo-link/song8.mp3",
+        "https://your-github-repo-link/song9.mp3",
+        "https://your-github-repo-link/song10.mp3"
+    ];
+
+    const trackSelect = document.getElementById('trackSelect');
+    const audioPlayer = document.getElementById('audioPlayer');
+    const audioSource = document.getElementById('audioSource');
+    const nextButton = document.getElementById('nextButton');
+    
+    let currentTrackIndex = -1;
+
+    trackSelect.addEventListener('change', function() {
+        const selectedTrack = parseInt(this.value);
+        if (selectedTrack > 0) {
+            currentTrackIndex = selectedTrack - 1; // Update index to play the selected song
+            loadTrack(currentTrackIndex);
+        } else {
+            audioSource.src = '';
+            audioPlayer.load();
+        }
+    });
+
+    nextButton.addEventListener('click', function() {
+        currentTrackIndex = (currentTrackIndex + 1) % trackList.length; // Loop back to the start
+        loadTrack(currentTrackIndex);
+    });
+
+    function loadTrack(index) {
+        audioSource.src = trackList[index];
+        audioPlayer.load();
+        audioPlayer.play();
+    }
+</script>
 
 </body>
 </html>
