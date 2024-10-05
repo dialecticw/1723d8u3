@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player Widget</title>
+    <style>
+        body {
+            background-color: transparent;
+            color: #447ACB;
+            font-family: Arial, sans-serif;
+            padding: 0;
+            display: inline-block;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars */
+        }
+        .player {
+            background-color: rgba(44, 44, 44, 1);
+           /* border-radius: 10px;*/
+            padding: 10px;
+            /*box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);*/
+            width: 350px; /* Wider to accommodate the image section */
+            height: 120px; /* Adjusted for layout */
+            position: relative;
+            display: flex;
+            justify-content: flex-start; /* Align items horizontally */
+            align-items: center; /* Vertically center everything */
+            border: 4px solid #447ACB;
+        }
+        .image-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100px; /* Fixed width for the image section */
+        }
+        .track-image {
+            width: 80px; /* Image size */
+            height: 80px; /* Image size */
+            border-radius: 50%;
+            border: 4px solid #447ACB;
+            animation: rotation 20s infinite linear; /* Slow rotation */
+        }
+        .controls-section {
+            flex-grow: 1;
+            padding-left: 10px; /* Add space between the image and text */
+        }
+        audio {
+            display: none;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0;
+            width: 100%;
+        }
+        .control-button {
+            background: none;
+            border: none;
+            color: #447ACB;
+            cursor: pointer;
+            font-size: 16px;
+            width: 30%;
+            transition: color 0.3s;
+        }
+        .control-button:hover {
+            color: #d94783;
+        }
+        .track-info {
+            text-align: center;
+            margin-top: 5px;
+        }
+        .track-title {
+            font-size: 12px;
+            margin: 0;
+        }
+        .artist-name {
+            font-size: 10px;
+            color: #447ACB;
+        }
+        .slider {
+            width: 100%;
+            margin-top: 5px;
+        }
+        input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            background: #447ACB;
+            height: 3px;
+            border-radius: 5px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #d94783;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        @keyframes rotation {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="player">
+    <div class="image-section">
+        <img id="trackImage" class="track-image" src="" alt="Track Image">
+    </div>
+    <div class="controls-section">
+        <div class="controls">
+            <button class="control-button" id="prevButton">&#9664;&#9664;</button>
+            <button class="control-button" id="playPauseButton">&#9654;</button>
+            <button class="control-button" id="nextButton">&#9654;&#9654;</button>
+        </div>
+        <div class="track-info">
+            <div class="track-title" id="trackTitle">Track Title</div>
+            <div class="artist-name" id="artistName">Artist Name</div>
+        </div>
+        <div class="slider">
+            <input type="range" id="progressBar" value="0" min="0" max="100">
+        </div>
+    </div>
+</div>
+
+<audio id="audioPlayer">
+    <source id="audioSource" src="" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+
+<script>
+    const trackList = [
+        { 
+            src: "https://dialecticw.github.io/1723d8u3/Goldeneye%20Watch%20Pause%20Music.mp3", 
+            img: "https://dialecticw.github.io/1723d8u3/maxresdefault.jpg", 
+            title: "Goldeneye 64 Pause Music", 
+            artist: "Meta" 
+        },
+        { 
+            src: "https://dialecticw.github.io/1723d8u3/Avatism%20-%20Self%20Control.mp3", 
+            img: "https://dialecticw.github.io/1723d8u3/self%20control.jpg", 
+            title: "Self Control", 
+            artist: "Avatism" 
+        },
+        { 
+            src: "https://dialecticw.github.io/1723d8u3/Do%20You%20Think%20About%20Me？.mp3", 
+            img: "https://dialecticw.github.io/1723d8u3/djheartstrings.jpg", 
+            title: "Do You Think About Me?", 
+            artist: "DJ Heartstrings" 
+        },
+        { 
+            src: "https://dialecticw.github.io/1723d8u3/Integral%20-%20Rise.mp3", 
+            img: "https://dialecticw.github.io/1723d8u3/integralrise.jpg", 
+            title: "Rise", 
+            artist: "Integral" 
+        },
+        { 
+            src: "https://dialecticw.github.io/1723d8u3/Solar%20Fields%20%E2%80%93%20Kate%20Puzzle.mp3", 
+            img: "https://dialecticw.github.io/1723d8u3/solarfields.jpg", 
+            title: "Razor's Edge", 
+            artist: "Solar Fields" 
+        },
+        { 
+            src: "https://dialecticw.github.io/1723d8u3/GoldenEye%20Music%20but%20it%27s%20Actually%20Project%20Pat.mp3", 
+            img: "https://dialecticw.github.io/1723d8u3/projectpat.jpg", 
+            title: "GoldenEye But It's 3-6 Mafia", 
+            artist: "Project Pat" 
+        },
+        { 
+            src: "https://dialecticw.github.io/1723d8u3/Ghosts.mp3", 
+            img: "https://dialecticw.github.io/1723d8u3/monolakeghosts.jpeg", 
+            title: "Ghosts", 
+            artist: "Monolake" 
+        },
+        { 
+            src: "https://dialecticw.github.io/1723d8u3/Burial, Ghost Hardware.mp3", 
+            img: "https://dialecticw.github.io/1723d8u3/burial.jpg", 
+            title: "Ghost Hardware", 
+            artist: "Burial" 
+        },
+        { 
+            src: "https://dialecticw.github.io/1723d8u3/Ate-Up%20(Original).mp3", 
+            img: "https://dialecticw.github.io/1723d8u3/avatismateup.jpg", 
+            title: "Ate-Up", 
+            artist: "Avatism" 
+        },
+        { 
+            src: "https://dialecticw.github.io/1723d8u3/Perfect%20Dark%20-%20Deep%20Sea%20Nullify%20Threat.mp3", 
+            img: "https://dialecticw.github.io/1723d8u3/Perfect_dark_box.jpg", 
+            title: "Nullified", 
+            artist: "Perfect Dark Soundtrack" 
+        },
+        { 
+            src: "https://dialecticw.github.io/1723d8u3/Meta%20(feat.%20Saddie)%20(Hardmix).mp3", 
+            img: "https://dialecticw.github.io/1723d8u3/bxtermeta%20copy.jpg", 
+            title: "Meta (Hardmix)", 
+            artist: "BXTR" 
+        }
+    ];
+
+    const audioPlayer = document.getElementById('audioPlayer');
+    const audioSource = document.getElementById('audioSource');
+    const progressBar = document.getElementById('progressBar');
+    const nextButton = document.getElementById('nextButton');
+    const prevButton = document.getElementById('prevButton');
+    const playPauseButton = document.getElementById('playPauseButton');
+    const trackImage = document.getElementById('trackImage');
+    const trackTitle = document.getElementById('trackTitle');
+    const artistName = document.getElementById('artistName');
+
+    let currentTrackIndex = 0;
+    let isPlaying = false;
+
+    function loadTrack(index) {
+        audioSource.src = trackList[index].src;
+        trackImage.src = trackList[index].img;
+        trackTitle.innerText = trackList[index].title;
+        artistName.innerText = trackList[index].artist;
+        trackImage.style.display = 'block';
+        audioPlayer.load();
+    }
+
+    function playTrack() {
+        audioPlayer.play().then(() => {
+            playPauseButton.innerHTML = '&#10074;&#10074;'; // Pause icon
+            isPlaying = true;
+        }).catch(error => {
+            console.log("Autoplay was prevented.");
+        });
+    }
+
+    function pauseTrack() {
+        audioPlayer.pause();
+        playPauseButton.innerHTML = '&#9654;'; // Play icon
+        isPlaying = false;
+    }
+
+    function updateProgressBar() {
+        const percentage = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+        progressBar.value = percentage || 0;
+    }
+
+    function setTrackPosition() {
+        const newTime = (progressBar.value / 100) * audioPlayer.duration;
+        audioPlayer.currentTime = newTime;
+    }
+
+    audioPlayer.addEventListener('timeupdate', updateProgressBar);
+
+    progressBar.addEventListener('input', setTrackPosition);
+
+    loadTrack(currentTrackIndex);
+
+    prevButton.addEventListener('click', function() {
+        currentTrackIndex = (currentTrackIndex - 1 + trackList.length) % trackList.length;
+        loadTrack(currentTrackIndex);
+        playTrack();
+    });
+
+    nextButton.addEventListener('click', function() {
+        currentTrackIndex = (currentTrackIndex + 1) % trackList.length;
+        loadTrack(currentTrackIndex);
+        playTrack();
+    });
+
+    audioPlayer.addEventListener('ended', function() {
+        // Autoplay the next track when the current one finishes
+        currentTrackIndex = (currentTrackIndex + 1) % trackList.length;
+        loadTrack(currentTrackIndex);
+        playTrack();
+    });
+
+    playPauseButton.addEventListener('click', function() {
+        if (isPlaying) {
+            pauseTrack();
+        } else {
+            playTrack();
+        }
+    });
+</script>
+
+</body>
+</html>
