@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solscan 30-Day Chart Embed</title>
+    <title>Solscan 30-Day AMM Chart</title>
     <style>
         body {
             margin: 0;
@@ -14,21 +14,78 @@
             height: 100vh;
             background-color: #f4f4f4;
         }
-        iframe {
-            border: none;
-            width: 100%;
+        #chart-container {
+            width: 80%;
             height: 80vh;
+            border: 1px solid #ccc;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
 
-<iframe 
-    src="https://solscan.io/amm/pumpfun?chart=30d"
-    width="100%" 
-    height="80%"
-    allowfullscreen>
-</iframe>
+<div id="chart-container">
+    <h2 style="text-align: center;">Loading chart...</h2>
+</div>
+
+<script>
+    async function fetchChartData() {
+        const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE3MjkyNTc0MzY4MDUsImVtYWlsIjoic3VwcGx5Y2hhaW42OTAwQGdtYWlsLmNvbSIsImFjdGlvbiI6InRva2VuLWFwaSIsImFwaVZlcnNpb24iOiJ2MiIsImlhdCI6MTcyOTI1NzQzNn0.FL-1uDz4DJ1sK9PAH2LvFSKEbz_00odtV_s5vTqXzlo";
+        const url = "https://solscan.io/amm/pumpfun";
+
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    "Authorization": `Bearer ${apiKey}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error fetching data: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            renderChart(data);
+        } catch (error) {
+            document.getElementById('chart-container').innerHTML = `<h2>Error loading chart: ${error.message}</h2>`;
+        }
+    }
+
+    function renderChart(data) {
+        const chartContainer = document.getElementById('chart-container');
+        chartContainer.innerHTML = ''; // Clear loading message
+
+        const canvas = document.createElement('canvas');
+        chartContainer.appendChild(canvas);
+
+        const ctx = canvas.getContext('2d');
+        const labels = data.map(entry => new Date(entry.timestamp * 1000).toLocaleDateString());
+        const values = data.map(entry => entry.price);
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '30-Day Price Trend',
+                    data: values,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    fetchChartData();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
 </html>
